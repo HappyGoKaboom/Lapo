@@ -1,0 +1,29 @@
+@font-face {
+    font-family: "Open Sans";
+    src: url("OpenSans/OpenSans-Regular.ttf");
+    }
+
+@font-face {
+    font-family: "Audiowide";
+    src: url("Audiowide-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Libre Barcode";
+    src: url("LibreBarcode39Extended-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Content";
+    src: url("Content-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Revalia";
+    src: url("Revalia-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Zilla Slab";
+    src: url("ZillaSlabHighlight-Regular.ttf");
+}
