@@ -143,28 +143,38 @@ $.global.register({
                 this.print($.create.p({textContent: line, styler: ["parser-exit","parser-text"]}), data);
             }
 
+            /*
+                Move the P Elements outside the container Div for the group, this displays the name,
+                    change the margin to 8px on the left
+
+                Sort the paths on the END function, it must take the current index and move to the previous one, this
+                    becomes thge new target, depth accessor method.
+             */
+
             GROUP_START(data, line, type) {
+                this.target.appendChild(
+                    $.create.p({styler: "parser-group-label", textContent: line}),
+                );
+
                 let group = (
-                    $.create.div({styler: "parser-group"},
-                        $.create.p({styler: "parser-group-label", textContent: line})
-                        )
+                    $.create.div({styler: "parser-group"})
                 );
 
                 this.target.appendChild(group);
-                this.target = group;
                 this.indentPath.push(group);
+                this.target = this.indentPath[this.indentPath.length-1];
                 this.indent++;
             }
 
             GROUP_END(data, line, type) {
-                this.target = this.default;
+                this.indentPath.pop();
+                this.target = this.indentPath.length > 0 ? this.indentPath[this.indentPath.length-1] : this.default;
                 this.indent--;
             }
 
             TABLE_START(data, line, type) {
                 let table = (
                     $.create.div({styler: "parser-table"},
-
                     )
                 );
 
@@ -230,8 +240,12 @@ $.global.register({
                         fontFamily: "Open Sans, arial",
                     },
                     "parser-group": {
-                        margin: "0",
+                        margin: "0px 20px",
+                        borderLeft: "2px solid gray",
+                        paddingLeft: "8px",
                         fontFamily: "Open Sans, arial",
+                        borderBottom: "2px solid gray",
+                        borderTop: "2px solid gray",
                     },
                     "parser-table": {
                         color: "green",
@@ -259,14 +273,13 @@ $.global.register({
                         gridColumnStart: 2,
                         gridRowStart: 1,
                         paddingLeft: "12px",
-                        indentCheck: (el) => {
-                            if ($.parser.indent > 0)
-                                {
-                                    el.style.borderLeft = "2px solid #6d85a9";
-                                }
-
-                            el.style.marginLeft = $.parser.indent * $.parser.indentSize + "px";
-                        },
+                        marginLeft: "20px",
+                    },
+                    "parser-group-end": {
+                        gridColumnStart: 2,
+                        gridRowStart: 1,
+                        paddingLeft: "12px",
+                        marginLeft: "20px",
                     },
                     "parser-lineNumber": {
                         fontSize: "10pt",
@@ -275,11 +288,8 @@ $.global.register({
                         gridRowStart: 1,
                     },
                     "parser-group-label": {
-                        borderBottom: "2px solid #6d85a9",
-                        paddingLeft: $.parser.indentSize + "px",
-                        indentCheck: (el) => {
-                            el.style.marginLeft = ($.parser.indent+2) * $.parser.indentSize + "px";
-                        },
+                        padding: () => {return "0px 0px 0px " + ($.parser.indentSize + "px")},
+                        marginLeft: "20px",
                     }
                 });
             }
