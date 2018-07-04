@@ -29,6 +29,9 @@ $.global.register({
                 this.indent = 0;
                 this.indentSize = 24; // 24 px indents
                 this.indentPath = [];
+                this.mode = null;
+                this.argsm = null;
+                this.last = null;
             }
 
             /*
@@ -120,7 +123,32 @@ $.global.register({
             }
 
             LOG(data, line, type) {
-                this.print($.create.p({textContent: line, styler: ["parser-log","parser-text"]}), data);
+                if (this.mode === "table")
+                    {
+                        let arr = line.split(this.argsm[2]);
+                        let columns = document.createDocumentFragment();
+
+                        for (let i = 0; i < arr.length; i++)
+                            {
+                                let item = arr[i];
+
+                                columns.appendChild(
+                                    $.create.p({textContent: item, styler: ["parser-log", "parser-text"], style: {
+                                        gridColumnStart: i+1,
+                                        }})
+                                );
+                            }
+
+                        this.print(
+                            $.create.div(
+                                {styler: "table-cols",style: {gridTemplateColumns: "repeat(" + this.argsm[1] + ", auto)"}},
+                                columns,
+                        ), data);
+                    }
+                else
+                    {
+                        this.print($.create.p({textContent: line, styler: ["parser-log", "parser-text"]}), data);
+                    }
             }
 
             WARN(data, line, type) {
@@ -142,14 +170,6 @@ $.global.register({
             EXIT(data, line, type) {
                 this.print($.create.p({textContent: line, styler: ["parser-exit","parser-text"]}), data);
             }
-
-            /*
-                Move the P Elements outside the container Div for the group, this displays the name,
-                    change the margin to 8px on the left
-
-                Sort the paths on the END function, it must take the current index and move to the previous one, this
-                    becomes thge new target, depth accessor method.
-             */
 
             GROUP_START(data, line, type) {
                 this.target.appendChild(
@@ -173,17 +193,36 @@ $.global.register({
             }
 
             TABLE_START(data, line, type) {
-                let table = (
-                    $.create.div({styler: "parser-table"},
-                    )
+                this.mode = "table";
+
+                let args = line.replace(/[()]/g, "").split(",");
+                if (args.length > 3)
+                    {
+                        args[2] = ",";
+                        args.pop();
+                    }
+
+                this.argsm = args;
+
+                this.target.appendChild(
+                    $.create.p({styler: "parser-table-label", textContent: args[0]}),
                 );
 
-                this.print(table);
-                this.target = table;
+                let table = (
+                    $.create.div({styler: "parser-table"})
+                );
+
+                this.target.appendChild(table);
+                this.indentPath.push(table);
+                this.target = this.indentPath[this.indentPath.length-1];
+                this.indent++;
             }
 
             TABLE_END(data, line, type) {
-                this.target = this.default;
+                this.mode = null;
+                this.indentPath.pop();
+                this.target = this.indentPath.length > 0 ? this.indentPath[this.indentPath.length-1] : this.default;
+                this.indent--;
             }
 
             JSON_START(data, line, type) {
@@ -240,20 +279,24 @@ $.global.register({
                         fontFamily: "Open Sans, arial",
                     },
                     "parser-group": {
-                        margin: "0px 20px",
-                        borderLeft: "2px solid gray",
+                        margin: "0px 4px 0px 20px",
+                        borderLeft: "1px solid gray",
                         paddingLeft: "8px",
                         fontFamily: "Open Sans, arial",
-                        borderBottom: "2px solid gray",
-                        borderTop: "2px solid gray",
+                        borderBottom: "1px solid gray",
+                        // borderTop: "1px solid gray",
+                        borderRight: "1px solid gray",
+                        // backgroundColor: "#edf3f9",
                     },
                     "parser-table": {
+                        border: "1px solid gray",
                         color: "green",
                         fontSize: "12pt",
                         fontStyle: "italic",
-                        margin: "0",
+                        margin: "0px 8px",
                         padding: "0 0 0 40",
                         fontFamily: "Open Sans, arial",
+                        backgroundColor: "#edf3f9",
                     },
                     "parser-line": {
                         display: "grid",
@@ -286,10 +329,21 @@ $.global.register({
                         color: "blue",
                         gridColumnStart: 4,
                         gridRowStart: 1,
+                        padding: "3px"
                     },
                     "parser-group-label": {
                         padding: () => {return "0px 0px 0px " + ($.parser.indentSize + "px")},
-                        marginLeft: "20px",
+                        border: "2px solid gray",
+                        borderTop: "1px solid gray",
+                        borderTopRightRadius: "25px",
+                        borderBottomLeftRadius: "12.5px",
+                        borderLeftWidth: "1px",
+                        margin: "0px 4px 0px 10px",
+                        backgroundColor: "#e9ecf9",
+                    },
+                    "table-cols": {
+                        display: "grid",
+                        justifyContent: "space-evenly",
                     }
                 });
             }
