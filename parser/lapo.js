@@ -89,7 +89,7 @@ $.global.register({
                     }
                 else
                     {
-                        return $.create.p({textContent: ":--", styler: "parser-lineNumber"});
+                        return $.create.p({textContent: "", styler: "parser-lineNumber"});
                     }
             }
 
@@ -100,7 +100,7 @@ $.global.register({
                     }
                 else
                     {
-                        return $.create.p({textContent: "--", styler: "parser-file"})
+                        return $.create.p({textContent: "", styler: "parser-file"})
                     }
             }
 
@@ -113,7 +113,7 @@ $.global.register({
                     }
                 else
                     {
-                        return $.create.p({textContent: "--", styler: "parser-time"});
+                        return $.create.p({textContent: "", styler: "parser-time"});
                     }
 
             }
@@ -127,23 +127,31 @@ $.global.register({
                     {
                         let arr = line.split(this.argsm[2]);
                         let columns = document.createDocumentFragment();
+                        let index = 0;
 
                         for (let i = 0; i < arr.length; i++)
                             {
                                 let item = arr[i];
 
-                                columns.appendChild(
-                                    $.create.p({textContent: item, styler: ["parser-log", "parser-text"], style: {
-                                        gridColumnStart: i+1,
-                                        }})
+                                if (index > parseInt(this.argsm[1]))
+                                    {
+                                        index = 0;
+                                    }
+
+                                let target = this.target.children[index];
+
+                                target.appendChild(
+                                    $.create.p({textContent: item, styler: ["parser-log", "parser-text"]})
                                 );
+
+                                index++;
                             }
 
-                        this.print(
-                            $.create.div(
-                                {styler: "table-cols",style: {gridTemplateColumns: "repeat(" + this.argsm[1] + ", auto)"}},
-                                columns,
-                        ), data);
+                        // this.print(
+                        //     $.create.div(
+                        //         {styler: "table-cols",style: {gridTemplateColumns: "repeat(" + this.argsm[1] + ", auto)"}},
+                        //         columns,
+                        // ), data);
                     }
                 else
                     {
@@ -196,6 +204,7 @@ $.global.register({
                 this.mode = "table";
 
                 let args = line.replace(/[()]/g, "").split(",");
+
                 if (args.length > 3)
                     {
                         args[2] = ",";
@@ -209,8 +218,17 @@ $.global.register({
                 );
 
                 let table = (
-                    $.create.div({styler: "parser-table"})
+                    $.create.div({styler: "parser-table", style: {gridTemplateColumns: "repeat("+args[1]+", auto)" } })
                 );
+
+                for (let i = 0; i < parseInt(args[1]); i++)
+                {
+                    table.appendChild($.create.div({
+                        style: {
+                            gridColumnStart: i+1,
+                        }
+                    }))
+                }
 
                 this.target.appendChild(table);
                 this.indentPath.push(table);
@@ -236,7 +254,7 @@ $.global.register({
             style() {
                 $.styler.create({
                     "parser-standard": {
-                        color: "lightgray",
+                        color: "light#6d85a9",
                         fontSize: "12pt",
                         margin: "0",
                         padding: "0",
@@ -271,7 +289,7 @@ $.global.register({
                         fontFamily: "Open Sans, arial",
                     },
                     "parser-comment": {
-                        color: "gray",
+                        color: "#6d85a9",
                         fontSize: "12pt",
                         fontStyle: "italic",
                         margin: "0",
@@ -279,36 +297,40 @@ $.global.register({
                         fontFamily: "Open Sans, arial",
                     },
                     "parser-group": {
-                        margin: "0px 4px 0px 20px",
-                        borderLeft: "1px solid gray",
+                        margin: "0px 0px 0px 20px",
+                        borderLeft: "1px solid #6d85a9",
                         paddingLeft: "8px",
                         fontFamily: "Open Sans, arial",
-                        borderBottom: "1px solid gray",
-                        // borderTop: "1px solid gray",
-                        borderRight: "1px solid gray",
+                        marginBottom: "4px",
+                        // borderBottom: "1px solid #edf3f9",
+                        // borderTop: "1px solid #6d85a9",
+                        // borderRight: "1px solid #edf3f9",
                         // backgroundColor: "#edf3f9",
                     },
                     "parser-table": {
-                        border: "1px solid gray",
+                        border: "1px solid #6d85a9",
                         color: "green",
                         fontSize: "12pt",
                         fontStyle: "italic",
                         margin: "0px 8px",
-                        padding: "0 0 0 40",
+                        padding: "4px 8px 4px 40px",
                         fontFamily: "Open Sans, arial",
                         backgroundColor: "#edf3f9",
+                        display: "grid",
+                        width: "fit-content",
                     },
                     "parser-line": {
                         display: "grid",
-                        gridTemplateColumns: "10% 80% 6% 4%",
+                        gridTemplateColumns: "10% auto min-content min-content",
+                        padding: "0px 4px",
                     },
                     "parser-file": {
-                        color: "darkblue",
+                        color: "#848484",
                         gridColumnStart: 3,
                         gridRowStart: 1,
                     },
                     "parser-time": {
-                        color: "blue",
+                        color: "#848484",
                         gridColumnStart: 1,
                         gridRowStart: 1,
                     },
@@ -326,19 +348,19 @@ $.global.register({
                     },
                     "parser-lineNumber": {
                         fontSize: "10pt",
-                        color: "blue",
+                        color: "#314273",
                         gridColumnStart: 4,
                         gridRowStart: 1,
-                        padding: "3px"
+                        padding: "0",
+                        marginLeft: "2px",
                     },
                     "parser-group-label": {
                         padding: () => {return "0px 0px 0px " + ($.parser.indentSize + "px")},
-                        border: "2px solid gray",
-                        borderTop: "1px solid gray",
+                        borderBottom: "1px solid #6d85a9",
                         borderTopRightRadius: "25px",
                         borderBottomLeftRadius: "12.5px",
                         borderLeftWidth: "1px",
-                        margin: "0px 4px 0px 10px",
+                        margin: "4px 2px 0px 10px",
                         backgroundColor: "#e9ecf9",
                     },
                     "table-cols": {

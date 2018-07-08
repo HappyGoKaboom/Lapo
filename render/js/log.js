@@ -13,7 +13,21 @@ const { StringDecoder } = require('string_decoder');
 
 $.log = class Log {
     run () {
-        let io = spawn($.args.run, $.args.argArray ? $.args.argArray : null);
+        if ($.args.switchDirectory)
+            {
+                process.chdir($.args.directory);
+            }
+
+        let io = spawn($.args.run, $.args.argArray ? $.args.argArray : []);
+
+        if ($.args.switchName)
+            {
+                $.id.log.info.name.textContent = $.args.name;
+            }
+        else
+            {
+                $.id.log.info.name.textContent = $.args.run;
+            }
 
         io.stdout.on('data', this.out.bind(this));
         io.stderr.on('data', this.err.bind(this));

@@ -58,6 +58,11 @@ function processArgs () {
                         args.start = $.argsv[k+1];
                         args.hasArgs = true;
                         break;
+                    case "-w":
+                        args.switchDirectory= true;
+                        args.directory = $.argsv[k+1];
+                        args.hasArgs = true;
+                        break;
                     default:
                         if (!args.switchRun)
                             {

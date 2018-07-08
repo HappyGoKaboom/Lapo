@@ -30,7 +30,7 @@ $.global.register({
                             $.create.div({styler: "log-wrapper"},
                                 // Project name, and types
                                 $.create.div({id: "log-left-panel"},
-                                    $.create.p({textContent: "$.args.name", styler: "log-proj-name"}),
+                                    $.create.p({id: "log.info.name", textContent: "$.args.name", styler: "log-proj-name"}),
                                     $.create.div(),
                                     $.create.div(),
                                     ),
