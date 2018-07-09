@@ -43,7 +43,7 @@ app.on('ready', createWindow);
 // shortcuts
 app.on('ready', () => {
   // Handle opening Chrome Dev Tools
-  globalShortcut.register('CommandOrControl+Tab', () => {
+  globalShortcut.register('CommandOrControl+Shift+Tab', () => {
     if (win.isFocused())
       {
       if (win.webContents.isDevToolsOpened())

@@ -31,8 +31,19 @@ $.global.register({
                                 // Project name, and types
                                 $.create.div({id: "log-left-panel"},
                                     $.create.p({id: "log.info.name", textContent: "$.args.name", styler: "log-proj-name"}),
-                                    $.create.div(),
-                                    $.create.div(),
+                                    $.create.p({
+                                        textContent: "Kill",
+                                        events: {
+                                           click: $.log.kill,
+                                        },
+                                        styler: ["command-text", "event hover command-text-hover/command-text-color"],
+                                        }),
+                                    $.create.p({
+                                        textContent: "Re-Run",
+                                        events: {
+                                            click: $.log.reRun,
+                                        },
+                                        styler: ["command-text", "event hover command-text-hover/command-text-color"]}),
                                     ),
                                 $.create.div({id: "log-main-panel"},
                                     $.create.div({styler: "log-out-wrap"},
@@ -40,8 +51,8 @@ $.global.register({
                                         )
                                     ),
                                 $.create.div({id: "log-right-panel"},
-
-                                    )
+                                    $.create.p({textContent: "Arguments", styler: "log-proj-name"}),
+                                    ),
                             )
                         )
                     );
@@ -62,17 +73,20 @@ $.global.register({
                     "#log-left-panel": {
                         gridColumnStart: 1,
                         gridRowStart: 1,
-                        height: "100%",
+                        height: "calc(100% - 24px)",
+                        padding: "12px 24px",
                     },
                     "#log-main-panel": {
                         gridColumnStart: 2,
                         gridRowStart: 1,
-                        height: "100%",
+                        height: "calc(100% - 24px)",
+                        padding: "12px 24px",
                     },
                     "#log-right-panel": {
                         gridColumnStart: 3,
                         gridRowStart: 1,
-                        height: "100%",
+                        height: "calc(100% - 24px)",
+                        padding: "12px 24px",
                     },
                     "log-proj-name": {
                         margin: "12px",
@@ -95,6 +109,25 @@ $.global.register({
                         height: "100%",
                         top: "0",
                         left: "0",
+                    },
+                    "command-text": {
+                        paddingLeft: "20%",
+                        cursor: "pointer",
+                        color: "#6d85a9",
+                        letterSpacing: "2px",
+                        transition: "color 150ms, transform 150ms",
+                        userSelect: $.prefix.bind("none"),
+                    },
+                    "command-text-hover": {
+                        transform: "translateX(-4px)",
+                        color: "#34a77c",
+                    },
+                    "command-text-color": {
+                        transform: "translateX(0px)",
+                        color: "#6d85a9",
+                    },
+                    "arg-value": {
+                        paddingLeft: "20%",
                     }
                 })
             }

@@ -133,16 +133,16 @@ $.global.register({
                             {
                                 let item = arr[i];
 
-                                if (index > parseInt(this.argsm[1]))
+                                if (index > this.argsm[1])
                                     {
                                         index = 0;
                                     }
 
                                 let target = this.target.children[index];
 
-                                target.appendChild(
-                                    $.create.p({textContent: item, styler: ["parser-log", "parser-text"]})
-                                );
+                                    target.appendChild(
+                                        $.create.p({textContent: item, styler: ["parser-log", "parser-text"]})
+                                    );
 
                                 index++;
                             }
@@ -195,6 +195,7 @@ $.global.register({
             }
 
             GROUP_END(data, line, type) {
+                this.mode = null;
                 this.indentPath.pop();
                 this.target = this.indentPath.length > 0 ? this.indentPath[this.indentPath.length-1] : this.default;
                 this.indent--;
@@ -211,6 +212,8 @@ $.global.register({
                         args.pop();
                     }
 
+                args[1] = parseInt(args[1]) -1;
+
                 this.argsm = args;
 
                 this.target.appendChild(
@@ -218,10 +221,10 @@ $.global.register({
                 );
 
                 let table = (
-                    $.create.div({styler: "parser-table", style: {gridTemplateColumns: "repeat("+args[1]+", auto)" } })
+                    $.create.div({styler: "parser-table", style: {gridTemplateColumns: "repeat("+ parseInt(args[1])-1 +", auto)" } })
                 );
 
-                for (let i = 0; i < parseInt(args[1]); i++)
+                for (let i = 0; i < args[1] +1; i++)
                 {
                     table.appendChild($.create.div({
                         style: {

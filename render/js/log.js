@@ -13,12 +13,26 @@ const { StringDecoder } = require('string_decoder');
 
 $.log = class Log {
     run () {
+        $.id("log-right-panel").innerHTML = "";
+        $.id("logger.out").innerHTML = "";
+
+        if ($.args.argArray && $.args.argArray.length > 0)
+            {
+                for (let i = 0; i < $.args.argArray.length; i++)
+                    {
+                        let item = $.args.argArray[i];
+                        let val = $.create.p({textContent: item, styler: ["arg-value"]});
+
+                        $.id("log-right-panel").appendChild(val);
+                    }
+            }
+
         if ($.args.switchDirectory)
             {
                 process.chdir($.args.directory);
             }
 
-        let io = spawn($.args.run, $.args.argArray ? $.args.argArray : []);
+        $.process = spawn($.args.run, $.args.argArray ? $.args.argArray : []);
 
         if ($.args.switchName)
             {
@@ -29,9 +43,9 @@ $.log = class Log {
                 $.id.log.info.name.textContent = $.args.run;
             }
 
-        io.stdout.on('data', this.out.bind(this));
-        io.stderr.on('data', this.err.bind(this));
-        io.on('close', this.exit.bind(this));
+        $.process.stdout.on('data', this.out.bind(this));
+        $.process.stderr.on('data', this.err.bind(this));
+        $.process.on('close', this.exit.bind(this));
     }
 
     out (data) {
@@ -75,6 +89,15 @@ $.log = class Log {
                 }
         });
 
+    }
+
+    kill() {
+        $.process.kill();
+    }
+
+    reRun () {
+        $.process.kill();
+        $.log.run();
     }
 };
 
